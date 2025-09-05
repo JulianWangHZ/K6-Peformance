@@ -1,11 +1,18 @@
 export const environments = {
-    staging: {
+    dev: {
         baseUrl: "https://node-express-conduit.appspot.com/api",
         timeout: "3s",
         thinkTime: "1s",
         users: 10,
         duration: "10min"
     },
+    stage: {
+        baseUrl: "https://api.realworld.show/api/",
+        timeout: "3s",
+        thinkTime: "1s",
+        users: 10,
+        duration: "10min"
+    }
 }
 
 // Performance thresholds
