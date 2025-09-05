@@ -1,6 +1,6 @@
 # K6 Conduit 效能測試
 
-[English](README.md) | [中文](README_zh.md)
+[English](README.md) | [中文](README.zh.md)
 
 這是一個使用 K6 對 [Conduit 開源討論平台](https://demo.realworld.show/#/) 進行效能測試的專案，包含負載測試、尖峰測試和壓力測試。
 
