@@ -1,6 +1,6 @@
 # K6 Conduit Performance Testing
 
-[English](README.MD) | [繁體中文](README_ZH.md)
+English | [繁體中文](README_ZH.md)
 
 A comprehensive performance testing project using K6 for the [Conduit Open Source Discussion Platform](https://demo.realworld.show/#/), including load testing, spike testing, and stress testing.
 
