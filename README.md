@@ -18,16 +18,16 @@ DummyJSON is a free REST API that provides fake data for testing and prototyping
 ### 1. Load Testing
 - **File**: `test_scripts/conduit_load_test.js`
 - **Purpose**: Test DummyJSON API performance under normal expected load
-- **Configuration**: 200 virtual users (distributed across scenarios), 10 minutes duration
+- **Configuration**: 200 virtual users (distributed across scenarios), 10.5 minutes duration
 - **Scenarios**: User login, post creation, commenting, and liking
 
 #### Test Execution Timeline
 ```
-Timeline: 0s -------- 30s -------- 1m -------- 7m -------- 9.5m
+Timeline: 0s -------- 30s -------- 1m -------- 7m -------- 10.5m
           |           |            |            |            |
 Creators:  [Content Creation Phase] (0-7 minutes)
-Consumers:           [Browse+Comment Phase] (30s-9.5 minutes)  
-Favoriters:                    [Like Phase] (1m-9.5 minutes)
+Consumers:           [Browse+Comment Phase] (30s-10 minutes)  
+Favoriters:                    [Like Phase] (1m-10.5 minutes)
 ```
 
 **Scenario Details:**
@@ -153,7 +153,7 @@ All configuration is centralized in `config/environments.js`:
 - **Timeout**: 3s
 - **Think Time**: 1s
 - **Users**: 200 virtual users
-- **Duration**: 10min
+- **Duration**: 10.5min
 
 **Performance Thresholds:**
 - Response time: 500ms (95th percentile) - optimized for DummyJSON API
