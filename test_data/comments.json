@@ -1,320 +1,64 @@
 {
-    "comments": [
-      {
-        "comment": {
-          "body": "Great article! K6 is indeed an excellent performance testing tool and very developer-friendly."
-        }
-      },
-      {
-        "comment": {
-          "body": "Thanks for sharing! I've been looking for a suitable performance testing solution, and this article provides very practical guidance."
-        }
-      },
-      {
-        "comment": {
-          "body": "Node.js and Express are a powerful combination, but you need to watch out for memory leaks."
-        }
-      },
-      {
-        "comment": {
-          "body": "Using TypeScript with React greatly improves the development experience—type safety really matters."
-        }
-      },
-      {
-        "comment": {
-          "body": "Database design for microservices is challenging; giving each service its own database is a solid approach."
-        }
-      },
-      {
-        "comment": {
-          "body": "The cultural shift in DevOps matters more than the tools—team collaboration is the key to success."
-        }
-      },
-      {
-        "comment": {
-          "body": "RESTful API design principles are clear, but you'll still hit many edge cases in practice."
-        }
-      },
-      {
-        "comment": {
-          "body": "GraphQL's strong typing is often better than REST for complex frontend needs."
-        }
-      },
-      {
-        "comment": {
-          "body": "Kubernetes has a steep learning curve, but once mastered it can greatly improve deployment efficiency."
-        }
-      },
-      {
-        "comment": {
-          "body": "The testing pyramid is important, but the real key is balancing coverage across the layers."
-        }
-      },
-      {
-        "comment": {
-          "body": "Security should matter to every developer; the OWASP Top 10 is a great reference."
-        }
-      },
-      {
-        "comment": {
-          "body": "Closures and the prototype chain are concepts advanced JavaScript developers must master."
-        }
-      },
-      {
-        "comment": {
-          "body": "Machine learning is increasingly widespread in modern apps—understanding the fundamentals helps a lot."
-        }
-      },
-      {
-        "comment": {
-          "body": "Cloud architecture patterns are critical for scalability, but you must also consider cost and complexity."
-        }
-      },
-      {
-        "comment": {
-          "body": "PWA tech brings web apps closer to native experiences; the service worker is the core."
-        }
-      },
-      {
-        "comment": {
-          "body": "Blockchain development is complex, but smart contracts have huge potential—worth diving into."
-        }
-      },
-      {
-        "comment": {
-          "body": "Traffic model design is crucial in performance testing—you need to simulate real usage."
-        }
-      },
-      {
-        "comment": {
-          "body": "Thresholds and automatic aborts make performance tests more reliable and prevent wasting resources."
-        }
-      },
-      {
-        "comment": {
-          "body": "API rate limiting and retry strategies are vital for stability; exponential backoff is a good strategy."
-        }
-      },
-      {
-        "comment": {
-          "body": "OpenTelemetry offers great observability—it really helps debug distributed systems."
-        }
-      },
-      {
-        "comment": {
-          "body": "Idempotency keys are essential to prevent duplicate operations, especially under high concurrency."
-        }
-      },
-      {
-        "comment": {
-          "body": "PostgreSQL connection pool tuning must match real workload—monitoring is crucial."
-        }
-      },
-      {
-        "comment": {
-          "body": "Message queues smooth peak load effectively, but watch for ordering and duplicate processing."
-        }
-      },
-      {
-        "comment": {
-          "body": "Blue-green and canary releases are safe strategies, but they require robust monitoring."
-        }
-      },
-      {
-        "comment": {
-          "body": "Chaos engineering validates system resilience, but the blast radius must be carefully controlled."
-        }
-      },
-      {
-        "comment": {
-          "body": "CDN and caching strategies are vital for read-heavy apps and can significantly boost performance."
-        }
-      },
-      {
-        "comment": {
-          "body": "Contract testing prevents breaking changes across microservices—an excellent safeguard."
-        }
-      },
-      {
-        "comment": {
-          "body": "E2E tools each have pros and cons; choose what fits your team and project."
-        }
-      },
-      {
-        "comment": {
-          "body": "This article is comprehensive and covers many important aspects of modern software development."
-        }
-      },
-      {
-        "comment": {
-          "body": "Practical advice! I'll try these best practices in our project."
-        }
-      },
-      {
-        "comment": {
-          "body": "Thanks for the detailed explanations—these insights are very helpful for beginners."
-        }
-      },
-      {
-        "comment": {
-          "body": "Performance optimization is a continuous process that requires ongoing monitoring and tuning."
-        }
-      },
-      {
-        "comment": {
-          "body": "Modern development requires many technologies, but the fundamentals matter most."
-        }
-      },
-      {
-        "comment": {
-          "body": "Teamwork and communication matter just as much—technology is only a tool."
-        }
-      },
-      {
-        "comment": {
-          "body": "Continuous learning and curiosity are essential qualities for developers."
-        }
-      },
-      {
-        "comment": {
-          "body": "This article gave me a deeper understanding of performance testing—thanks for sharing!"
-        }
-      },
-      {
-        "comment": {
-          "body": "Real-world cases and code samples make concepts easier to understand—great teaching style."
-        }
-      },
-      {
-        "comment": {
-          "body": "Tech choices should consider team skills, project needs, and long-term maintenance costs."
-        }
-      },
-      {
-        "comment": {
-          "body": "Documentation and knowledge sharing are important for team growth—everyone should contribute."
-        }
-      },
-      {
-        "comment": {
-          "body": "The structure is clear, covering basics through advanced applications."
-        }
-      },
-      {
-        "comment": {
-          "body": "The implementation details and caveats are practical and help avoid common pitfalls."
-        }
-      },
-      {
-        "comment": {
-          "body": "Trends change quickly, but core principles are stable—build strong foundations."
-        }
-      },
-      {
-        "comment": {
-          "body": "This article is worth saving; I'll recommend it to the rest of the team."
-        }
-      },
-      {
-        "comment": {
-          "body": "Natural language–driven E2E with browser-use lowers the barrier for manual QA to automate flows."
-        }
-      },
-      {
-        "comment": {
-          "body": "Spike testing revealed our API gateway as the bottleneck rather than the app servers."
-        }
-      },
-      {
-        "comment": {
-          "body": "Great call-out on idempotency keys—prevented duplicate payments in our checkout service."
-        }
-      },
-      {
-        "comment": {
-          "body": "We paired k6 with Grafana and Loki; the live dashboards made triage much faster."
-        }
-      },
-      {
-        "comment": {
-          "body": "Exponential backoff with jitter reduced our 429s significantly during peak hours."
-        }
-      },
-      {
-        "comment": {
-          "body": "Contract testing with Pact uncovered a breaking field rename before it reached staging."
-        }
-      },
-      {
-        "comment": {
-          "body": "HPA scaled pods quickly, but the database pool became saturated—good reminder to test vertically too."
-        }
-      },
-      {
-        "comment": {
-          "body": "Blue-green deployments gave us instant rollback when p95 latency spiked."
-        }
-      },
-      {
-        "comment": {
-          "body": "Caching article lists with stale-while-revalidate cut median latency by half."
-        }
-      },
-      {
-        "comment": {
-          "body": "Great breakdown of REST vs GraphQL; we ended up using GraphQL for aggregation-heavy views."
-        }
-      },
-      {
-        "comment": {
-          "body": "Service workers are underrated; offline drafts saved our users more than once."
-        }
-      },
-      {
-        "comment": {
-          "body": "Nice emphasis on observability—trace IDs in logs made cross-service debugging trivial."
-        }
-      },
-      {
-        "comment": {
-          "body": "E2E tests are flaky without proper waits; Playwright’s auto-waiting helped a lot."
-        }
-      },
-      {
-        "comment": {
-          "body": "pytest-bdd keeps scenarios readable for PMs while remaining executable for CI."
-        }
-      },
-      {
-        "comment": {
-          "body": "Rate limits should be per-user and per-IP; single global caps cause noisy neighbors."
-        }
-      },
-      {
-        "comment": {
-          "body": "We saw better stability after moving background jobs to a queue with retry DLQs."
-        }
-      },
-      {
-        "comment": {
-          "body": "Feature flags let us canary UI changes to 5% of users before a full rollout."
-        }
-      },
-      {
-        "comment": {
-          "body": "Database migrations need backward compatibility to support rolling deploys."
-        }
-      },
-      {
-        "comment": {
-          "body": "Good reminder to monitor p99, not just p95—tail latency hurts real users."
-        }
-      },
-      {
-        "comment": {
-          "body": "Solid introduction; a follow-up with real datasets and thresholds would be awesome."
-        }
-      }
-    ]
-  }
-  
+  "comments": [
+    {
+      "body": "Great article! K6 is indeed an excellent performance testing tool and very developer-friendly."
+    },
+    {
+      "body": "Thanks for sharing! I've been looking for a suitable performance testing solution, and this article provides very practical guidance."
+    },
+    {
+      "body": "Node.js and Express are a powerful combination, but you need to watch out for memory leaks."
+    },
+    {
+      "body": "Using TypeScript with React greatly improves the development experience—type safety really matters."
+    },
+    {
+      "body": "Database design for microservices is challenging; giving each service its own database is a solid approach."
+    },
+    {
+      "body": "The cultural shift in DevOps matters more than the tools—team collaboration is the key to success."
+    },
+    {
+      "body": "RESTful API design principles are clear, but you'll still hit many edge cases in practice."
+    },
+    {
+      "body": "GraphQL's strong typing is often better than REST for complex frontend needs."
+    },
+    {
+      "body": "Kubernetes has a steep learning curve, but once mastered it can greatly improve deployment efficiency."
+    },
+    {
+      "body": "The testing pyramid is important, but the real key is balancing coverage across the layers."
+    },
+    {
+      "body": "Security should matter to every developer; the OWASP Top 10 is a great reference."
+    },
+    {
+      "body": "Closures and the prototype chain are concepts advanced JavaScript developers must master."
+    },
+    {
+      "body": "Machine learning is increasingly widespread in modern apps—understanding the fundamentals helps a lot."
+    },
+    {
+      "body": "Cloud architecture patterns are critical for scalability, but you must also consider cost and complexity."
+    },
+    {
+      "body": "PWA tech brings web apps closer to native experiences; the service worker is the core."
+    },
+    {
+      "body": "Blockchain development is complex, but smart contracts have huge potential—worth diving into."
+    },
+    {
+      "body": "Traffic model design is crucial in performance testing—you need to simulate real usage."
+    },
+    {
+      "body": "Thresholds and automatic aborts make performance tests more reliable and prevent wasting resources."
+    },
+    {
+      "body": "API rate limiting and retry strategies are vital for stability; exponential backoff is a good strategy."
+    },
+    {
+      "body": "OpenTelemetry offers great observability—it really helps debug distributed systems."
+    }
+  ]
+}

@@ -1,38 +1,53 @@
-# K6 Conduit Performance Testing
+# K6 DummyJSON Performance Testing
 
 [English](README.md) | [中文](README.zh.md)
 
-A comprehensive performance testing project using K6 for the [Conduit Open Source Discussion Platform](https://demo.realworld.show/#/), including load testing, spike testing, and stress testing.
+A comprehensive performance testing project using K6 for the [DummyJSON API](https://dummyjson.com/), including load testing, spike testing, and stress testing.
 
 ## Project Overview
 
-Conduit is an open-source community discussion platform that provides article publishing, commenting, and user management features. This project conducts comprehensive performance testing on the platform to ensure system stability and performance under various load conditions.
+DummyJSON is a free REST API that provides fake data for testing and prototyping. This project conducts comprehensive performance testing on the DummyJSON API to test system stability and performance under various load conditions, including user authentication, post creation, commenting, and liking functionality.
 
 ## Test Environments
 
-- **Development Environment**: https://node-express-conduit.appspot.com/api
-- **Staging Environment**: https://api.realworld.show/api/
+- **Development Environment**: https://dummyjson.com
+- **Staging Environment**: https://dummyjson.com
 
 ## Test Types
 
 ### 1. Load Testing
 - **File**: `test_scripts/conduit_load_test.js`
-- **Purpose**: Test system performance under normal expected load
-- **Configuration**: 10 virtual users, 10 minutes duration
+- **Purpose**: Test DummyJSON API performance under normal expected load
+- **Configuration**: 200 virtual users (distributed across scenarios), 10 minutes duration
+- **Scenarios**: User login, post creation, commenting, and liking
+
+#### Test Execution Timeline
+```
+Timeline: 0s -------- 30s -------- 1m -------- 7m -------- 9.5m
+          |           |            |            |            |
+Creators:  [Content Creation Phase] (0-7 minutes)
+Consumers:           [Browse+Comment Phase] (30s-9.5 minutes)  
+Favoriters:                    [Like Phase] (1m-9.5 minutes)
+```
+
+**Scenario Details:**
+- **Creators**: 2-20 VUs, create posts and content
+- **Consumers**: 35-140 VUs, browse and comment on existing posts
+- **Favoriters**: 10-40 VUs, like and interact with posts
 
 ### 2. Spike Testing
 - **File**: `test_scripts/conduit_spike_test.js`
-- **Purpose**: Test system behavior when load increases dramatically in a short time
-- **Configuration**: Simulates traffic spikes
+- **Purpose**: Test DummyJSON API behavior when load increases dramatically in a short time
+- **Configuration**: Simulates traffic spikes with rapid user increase
 
 ### 3. Stress Testing
 - **File**: `test_scripts/conduit_stress_test.js`
-- **Purpose**: Test system limits under conditions beyond normal load
+- **Purpose**: Test DummyJSON API limits under conditions beyond normal load
 - **Configuration**: Gradually increase load until system reaches its limit
 
 ## Performance Metrics
 
-- **Response Time**: 95% of requests should complete within 1 second
+- **Response Time**: 95% of requests should complete within 500ms (DummyJSON is typically faster)
 - **Error Rate**: Should be less than 1%
 - **Check Pass Rate**: Should be higher than 99%
 
@@ -72,34 +87,7 @@ npm install
 
 ### Environment Configuration
 
-Create a `.env.local` file to customize your test environment:
-
-```bash
-# Copy the example file
-cp .env.local.example .env.local
-```
-
-Edit `.env.local` with your preferred settings:
-
-```env
-# Test Environment Selection
-ENV=staging
-
-# API Configuration (optional - can override defaults in environments.js)
-DEV_BASE_URL=https://node-express-conduit.appspot.com/api
-STAGE_BASE_URL=https://api.realworld.show/api/
-
-# Test Configuration (optional - can override defaults in environments.js)
-DEFAULT_TIMEOUT=3s
-DEFAULT_THINK_TIME=1s
-DEFAULT_USERS=10
-DEFAULT_DURATION=10min
-
-# Performance Thresholds (optional - can override defaults in environments.js)
-RESPONSE_TIME_THRESHOLD=1000
-ERROR_RATE_THRESHOLD=0.01
-CHECK_PASS_RATE_THRESHOLD=0.99
-```
+The project is configured to use DummyJSON API by default. All configuration is centralized in `config/environments.js` and no additional environment files are needed.
 
 ### Running Tests
 
@@ -129,17 +117,13 @@ npm run test:load:dev
 npm run test:load:stage
 ```
 
-#### Using Environment Variables
+#### Using Different Environments
 ```bash
-# Use .env.local file with npm scripts
-npm run test:load:env
-npm run test:spike:env
-npm run test:stress:env
-npm run test:all:env
+# Using development environment (same as staging for DummyJSON)
+npm run test:load:dev
 
-# Or use specific environment variables directly
-DEFAULT_USERS=20 npm run test:load
-DEFAULT_USERS=50 DEFAULT_DURATION=5min npm run test:stress
+# Using staging environment (default)
+npm run test:load:stage
 ```
 
 ## Project Structure
@@ -154,8 +138,6 @@ K6-Peformance/
 │   ├── conduit_load_test.js    # Load test script
 │   ├── conduit_spike_test.js   # Spike test script
 │   └── conduit_stress_test.js  # Stress test script
-├── .env.local.example          # Environment variables example
-├── .env.local                  # Local environment variables (create this)
 ├── package.json                # Project dependencies and scripts
 └── README.md                   # Project documentation
 ```
@@ -164,67 +146,34 @@ K6-Peformance/
 
 ### Environment Configuration (`config/environments.js`)
 
-All configuration is centralized in `config/environments.js` with environment variable support:
+All configuration is centralized in `config/environments.js`:
 
 **Default Configuration:**
-- **Dev Environment**: `https://node-express-conduit.appspot.com/api`
-- **Stage Environment**: `https://api.realworld.show/api/`
-- **Default Timeout**: 3s
-- **Default Think Time**: 1s
-- **Default Users**: 10
-- **Default Duration**: 10min
+- **API URL**: `https://dummyjson.com` (both dev and stage)
+- **Timeout**: 3s
+- **Think Time**: 1s
+- **Users**: 200 virtual users
+- **Duration**: 10min
 
-**Environment Variables (via `.env.local` - all optional):**
-- `ENV`: Select environment (dev/stage)
-- `DEV_BASE_URL`: Override development API URL
-- `STAGE_BASE_URL`: Override staging API URL
-- `DEFAULT_TIMEOUT`: Override default request timeout
-- `DEFAULT_THINK_TIME`: Override default user think time
-- `DEFAULT_USERS`: Override default number of virtual users
-- `DEFAULT_DURATION`: Override default test duration
-- `RESPONSE_TIME_THRESHOLD`: Override response time threshold (default: 1000ms)
-- `ERROR_RATE_THRESHOLD`: Override error rate threshold (default: 0.01)
-- `CHECK_PASS_RATE_THRESHOLD`: Override check pass rate threshold (default: 0.99)
-
-### Using Environment Variables
-
-1. **Create `.env.local` file:**
-   ```bash
-   cp .env.local.example .env.local
-   ```
-
-2. **Edit your configuration:**
-   ```env
-   ENV=staging
-   DEFAULT_USERS=20
-   DEFAULT_DURATION=5min
-   ```
-
-3. **Run tests with environment variables:**
-   ```bash
-   # Using npm scripts (recommended)
-   npm run test:load:env
-   
-   # Or directly with environment variables
-   DEFAULT_USERS=20 npm run test:load
-   ```
-
-### Performance Thresholds
-
-Performance thresholds are defined in `config/environments.js` and can be customized via environment variables:
-
-- `http_req_duration`: HTTP request duration threshold (95th percentile)
-- `http_req_failed`: HTTP request failure rate threshold
-- `checks`: Check pass rate threshold
-
-**Default Values:**
-- Response time: 1000ms (95th percentile)
+**Performance Thresholds:**
+- Response time: 500ms (95th percentile) - optimized for DummyJSON API
 - Error rate: 1%
 - Check pass rate: 99%
 
-**Override via Environment Variables:**
-```bash
-RESPONSE_TIME_THRESHOLD=500 ERROR_RATE_THRESHOLD=0.005 k6 run test_scripts/conduit_load_test.js
+### Customizing Configuration
+
+To modify test parameters, edit `config/environments.js` directly:
+
+```javascript
+export const environments = {
+    dev: {
+        baseUrl: "https://dummyjson.com",
+        timeout: "3s",
+        thinkTime: "1s",
+        users: 200,        // Change number of users here
+        duration: "10min"  // Change test duration here
+    }
+}
 ```
 
 ## Test Reports
@@ -234,11 +183,13 @@ After running tests, K6 generates detailed performance reports including:
 - Response time distribution
 - Error rate analysis
 - System resource usage
+- HTML report generated automatically in `results/` directory
 
 ## Important Notes
 
-1. Ensure the target environment is accessible before running tests
-2. Recommend testing in non-production environments
-3. Adjust test parameters according to actual requirements
-4. Monitor target system resource usage
+1. DummyJSON is a free API service - no authentication required for basic testing
+2. Tests use predefined post IDs (1-10) for commenting and liking scenarios
+3. User authentication uses fixed credentials (emilys/emilyspass) for consistency
+4. Adjust test parameters according to actual requirements
+5. Monitor API rate limits and response times during testing
 

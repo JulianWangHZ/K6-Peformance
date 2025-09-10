@@ -39,4 +39,4 @@ Thumbs.db
 .git-robot/
 
 # html report
-result.html
+results/

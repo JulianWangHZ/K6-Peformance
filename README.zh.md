@@ -1,38 +1,53 @@
-# K6 Conduit 效能測試
+# K6 DummyJSON 效能測試
 
 [English](README.md) | [中文](README.zh.md)
 
-這是一個使用 K6 對 [Conduit 開源討論平台](https://demo.realworld.show/#/) 進行效能測試的專案，包含負載測試、尖峰測試和壓力測試。
+這是一個使用 K6 對 [DummyJSON API](https://dummyjson.com/) 進行效能測試的專案，包含負載測試、尖峰測試和壓力測試。
 
 ## 專案概述
 
-Conduit 是一個開源的社群討論平台，提供文章發布、評論、用戶管理等功能。本專案針對該平台進行全面的效能測試，確保系統在不同負載條件下的稳定性和效能表現。
+DummyJSON 是一個免費的 REST API，提供用於測試和原型設計的假數據。本專案針對 DummyJSON API 進行全面的效能測試，包括用戶認證、文章創建、評論和點讚功能，確保系統在不同負載條件下的稳定性和效能表現。
 
 ## 測試環境
 
-- **開發環境**: https://node-express-conduit.appspot.com/api
-- **測試環境**: https://api.realworld.show/api/
+- **開發環境**: https://dummyjson.com
+- **測試環境**: https://dummyjson.com
 
 ## 測試類型
 
 ### 1. 負載測試 (Load Test)
 - **檔案**: `test_scripts/conduit_load_test.js`
-- **目的**: 測試系統在正常預期負載下的效能表現
-- **配置**: 10 個虛擬用戶，持續 10 分鐘
+- **目的**: 測試 DummyJSON API 在正常預期負載下的效能表現
+- **配置**: 200 個虛擬用戶（分散到不同場景），持續 10 分鐘
+- **場景**: 用戶登入、文章創建、評論和點讚
+
+#### 測試執行時間軸
+```
+時間軸: 0s -------- 30s -------- 1m -------- 7m -------- 9.5m
+       |           |            |            |            |
+Creators:  [創建內容階段] (0-7分鐘)
+Consumers:           [瀏覽+評論階段] (30秒-9.5分鐘)  
+Favoriters:                    [點讚階段] (1分鐘-9.5分鐘)
+```
+
+**場景詳情：**
+- **Creators**: 2-20 個 VU，創建文章和內容
+- **Consumers**: 35-140 個 VU，瀏覽和評論現有文章
+- **Favoriters**: 10-40 個 VU，點讚和與文章互動
 
 ### 2. 尖峰測試 (Spike Test)
 - **檔案**: `test_scripts/conduit_spike_test.js`
-- **目的**: 測試系統在短時間內負載急劇增加時的表現
-- **配置**: 模擬流量突增情況
+- **目的**: 測試 DummyJSON API 在短時間內負載急劇增加時的表現
+- **配置**: 模擬流量突增情況，快速增加用戶數
 
 ### 3. 壓力測試 (Stress Test)
 - **檔案**: `test_scripts/conduit_stress_test.js`
-- **目的**: 測試系統在超出正常負載條件下的極限表現
+- **目的**: 測試 DummyJSON API 在超出正常負載條件下的極限表現
 - **配置**: 逐步增加負載直到系統達到極限
 
 ## 效能指標
 
-- **響應時間**: 95% 的請求應在 1 秒內完成
+- **響應時間**: 95% 的請求應在 500ms 內完成（DummyJSON 通常更快）
 - **錯誤率**: 應低於 1%
 - **檢查通過率**: 應高於 99%
 
@@ -72,34 +87,7 @@ npm install
 
 ### 環境配置
 
-創建 `.env.local` 檔案來自定義您的測試環境：
-
-```bash
-# 複製範例檔案
-cp .env.local.example .env.local
-```
-
-編輯 `.env.local` 檔案以設定您的偏好：
-
-```env
-# 測試環境選擇
-ENV=staging
-
-# API 配置 (可選 - 可覆蓋 environments.js 中的預設值)
-DEV_BASE_URL=https://node-express-conduit.appspot.com/api
-STAGE_BASE_URL=https://api.realworld.show/api/
-
-# 測試配置 (可選 - 可覆蓋 environments.js 中的預設值)
-DEFAULT_TIMEOUT=3s
-DEFAULT_THINK_TIME=1s
-DEFAULT_USERS=10
-DEFAULT_DURATION=10min
-
-# 效能閾值 (可選 - 可覆蓋 environments.js 中的預設值)
-RESPONSE_TIME_THRESHOLD=1000
-ERROR_RATE_THRESHOLD=0.01
-CHECK_PASS_RATE_THRESHOLD=0.99
-```
+專案預設配置為使用 DummyJSON API。所有配置都集中在 `config/environments.js` 中，不需要額外的環境檔案。
 
 ### 執行測試
 
@@ -129,17 +117,13 @@ npm run test:load:dev
 npm run test:load:stage
 ```
 
-#### 使用環境變數
+#### 使用不同環境
 ```bash
-# 使用 .env.local 檔案配合 npm 腳本
-npm run test:load:env
-npm run test:spike:env
-npm run test:stress:env
-npm run test:all:env
+# 使用開發環境 (與測試環境相同，都是 DummyJSON)
+npm run test:load:dev
 
-# 或直接使用特定的環境變數
-DEFAULT_USERS=20 npm run test:load
-DEFAULT_USERS=50 DEFAULT_DURATION=5min npm run test:stress
+# 使用測試環境 (預設)
+npm run test:load:stage
 ```
 
 ## 專案結構
@@ -154,8 +138,6 @@ K6-Peformance/
 │   ├── conduit_load_test.js    # 負載測試腳本
 │   ├── conduit_spike_test.js   # 尖峰測試腳本
 │   └── conduit_stress_test.js  # 壓力測試腳本
-├── .env.local.example          # 環境變數範例
-├── .env.local                  # 本地環境變數 (需自行創建)
 ├── package.json                # 專案依賴和腳本
 └── README.md                   # 專案說明文件
 ```
@@ -164,68 +146,36 @@ K6-Peformance/
 
 ### 環境配置 (`config/environments.js`)
 
-所有配置都集中在 `config/environments.js` 中，並支援環境變數：
+所有配置都集中在 `config/environments.js` 中：
 
 **預設配置：**
-- **開發環境**: `https://node-express-conduit.appspot.com/api`
-- **測試環境**: `https://api.realworld.show/api/`
-- **預設超時時間**: 3s
-- **預設思考時間**: 1s
-- **預設用戶數**: 10
-- **預設持續時間**: 10min
+- **API URL**: `https://dummyjson.com` (開發和測試環境相同)
+- **超時時間**: 3s
+- **思考時間**: 1s
+- **用戶數**: 200 個虛擬用戶
+- **持續時間**: 10min
 
-**環境變數 (透過 `.env.local` - 全部為可選)：**
-- `ENV`: 選擇環境 (dev/stage)
-- `DEV_BASE_URL`: 覆蓋開發環境 API URL
-- `STAGE_BASE_URL`: 覆蓋測試環境 API URL
-- `DEFAULT_TIMEOUT`: 覆蓋預設請求超時時間
-- `DEFAULT_THINK_TIME`: 覆蓋預設用戶思考時間
-- `DEFAULT_USERS`: 覆蓋預設虛擬用戶數量
-- `DEFAULT_DURATION`: 覆蓋預設測試持續時間
-- `RESPONSE_TIME_THRESHOLD`: 覆蓋響應時間閾值 (預設: 1000ms)
-- `ERROR_RATE_THRESHOLD`: 覆蓋錯誤率閾值 (預設: 0.01)
-- `CHECK_PASS_RATE_THRESHOLD`: 覆蓋檢查通過率閾值 (預設: 0.99)
-
-### 使用環境變數
-
-1. **創建 `.env.local` 檔案：**
-   ```bash
-   cp .env.local.example .env.local
-   ```
-
-2. **編輯您的配置：**
-   ```env
-   ENV=staging
-   DEFAULT_USERS=20
-   DEFAULT_DURATION=5min
-   ```
-
-3. **使用環境變數執行測試：**
-   ```bash
-   # 使用 npm 腳本 (推薦)
-   npm run test:load:env
-   
-   # 或直接使用環境變數
-   DEFAULT_USERS=20 npm run test:load
-   ```
-
-### 效能閾值
-
-效能閾值定義在 `config/environments.js` 中，可透過環境變數自定義：
-
-- `http_req_duration`: HTTP 請求持續時間閾值 (95 百分位數)
-- `http_req_failed`: HTTP 請求失敗率閾值
-- `checks`: 檢查通過率閾值
-
-**預設值：**
-- 響應時間: 1000ms (95 百分位數)
+**效能閾值：**
+- 響應時間: 500ms (95 百分位數) - 針對 DummyJSON API 優化
 - 錯誤率: 1%
 - 檢查通過率: 99%
 
-**透過環境變數覆蓋：**
-```bash
-RESPONSE_TIME_THRESHOLD=500 ERROR_RATE_THRESHOLD=0.005 k6 run test_scripts/conduit_load_test.js
+### 自定義配置
+
+要修改測試參數，直接編輯 `config/environments.js`：
+
+```javascript
+export const environments = {
+    dev: {
+        baseUrl: "https://dummyjson.com",
+        timeout: "3s",
+        thinkTime: "1s",
+        users: 200,        // 在這裡修改用戶數量
+        duration: "10min"  // 在這裡修改測試持續時間
+    }
+}
 ```
+
 
 ## 測試報告
 
@@ -234,13 +184,15 @@ RESPONSE_TIME_THRESHOLD=500 ERROR_RATE_THRESHOLD=0.005 k6 run test_scripts/condu
 - 響應時間分佈
 - 錯誤率分析
 - 系統資源使用情況
+- 自動在 `results/` 目錄中生成 HTML 報告
 
 ## 注意事項
 
-1. 請確保在執行測試前，目標環境是可訪問的
-2. 建議在非生產環境進行測試
-3. 根據實際需求調整測試參數
-4. 監控目標系統的資源使用情況
+1. DummyJSON 是免費的 API 服務 - 基本測試不需要認證
+2. 測試使用預設的文章 ID（1-10）進行評論和點讚場景
+3. 用戶認證使用固定憑證（emilys/emilyspass）以保持一致性
+4. 根據實際需求調整測試參數
+5. 監控 API 速率限制和響應時間
 
 ## 貢獻
 
