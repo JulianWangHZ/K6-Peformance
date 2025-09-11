@@ -54,7 +54,16 @@ Phase:   Start → Normal → Spike1 → Sustain → Drop → Recovery → Spike
 ### 3. Stress Testing
 - **File**: `test_scripts/conduit_stress_test.js`
 - **Purpose**: Test DummyJSON API limits under conditions beyond normal load
-- **Configuration**: Gradually increase load until system reaches its limit
+- **Configuration**: Gradually increase load until system reaches its limit (50 → 200 → 500 → 800 → 1100 → 1300 VUs)
+- **Duration**: 30 minutes with progressive load increase
+- **Scenarios**: Adaptive workload based on stress level
+
+#### Stress Test Timeline
+```
+Timeline: 0m → 2m → 5m → 7m → 10m → 12m → 15m → 17m → 20m → 22m → 25m → 27m → 30m
+VUs:     0  → 50  → 200 → 200 → 500 → 500 → 800 → 800 → 1100 → 1100 → 1300 → 1300 → 0
+Phase:   Start → Warm → Normal → Steady → Stress1 → Steady → Stress2 → Steady → Stress3 → Steady → Peak → Steady → End
+```
 
 ## Performance Metrics
 
