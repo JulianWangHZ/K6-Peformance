@@ -13,12 +13,15 @@ function sleepJitter(minSeconds = 1, maxSeconds = 3) {
 }
 
 function retryOperation(operation, maxRetries = 3, operationName = 'operation') {
+    let lastResult = false;
+    
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const result = operation();
             if (result !== false) {
                 return result;
             }
+            lastResult = result;
         } catch (error) {
             //console.log(`${operationName} attempt ${attempt} failed: ${error.message}`);
         }
@@ -31,7 +34,7 @@ function retryOperation(operation, maxRetries = 3, operationName = 'operation') 
     }
     
     //console.log(`${operationName} failed after ${maxRetries} attempts`);
-    return false;
+    return lastResult;
 }
 
 // custom metrics

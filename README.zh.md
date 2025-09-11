@@ -8,6 +8,8 @@
 
 DummyJSON 是一個免費的 REST API，提供用於測試和原型設計的假數據。本專案針對 DummyJSON API 進行全面的效能測試，包括用戶認證、文章創建、評論和點讚功能，確保系統在不同負載條件下的稳定性和效能表現。
 
+![效能演示](assets/performance_demo.gif)
+
 ## 測試環境
 
 - **開發環境**: https://dummyjson.com

@@ -8,6 +8,8 @@ A comprehensive performance testing project using K6 for the [DummyJSON API](htt
 
 DummyJSON is a free REST API that provides fake data for testing and prototyping. This project conducts comprehensive performance testing on the DummyJSON API to test system stability and performance under various load conditions, including user authentication, post creation, commenting, and liking functionality.
 
+![Performance Demo](assets/performance_demo.gif)
+
 ## Test Environments
 
 - **Development Environment**: https://dummyjson.com
