@@ -13,28 +13,25 @@ function sleepJitter(minSeconds = 1, maxSeconds = 3) {
 }
 
 function retryOperation(operation, maxRetries = 3, operationName = 'operation') {
-    let lastResult = false;
-    
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const result = operation();
             if (result !== false) {
                 return result;
             }
-            lastResult = result;
         } catch (error) {
-            //console.log(`${operationName} attempt ${attempt} failed: ${error.message}`);
+            console.log(`${operationName} attempt ${attempt} failed: ${error.message}`);
         }
         
         if (attempt < maxRetries) {
             const backoffTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
-            //console.log(`Retrying ${operationName} in ${backoffTime}ms...`);
+            // console.log(`Retrying ${operationName} in ${backoffTime}ms...`);
             sleep(backoffTime / 1000);
         }
     }
     
-    //console.log(`${operationName} failed after ${maxRetries} attempts`);
-    return lastResult;
+    console.log(`${operationName} failed after ${maxRetries} attempts`);
+    return false;
 }
 
 // custom metrics
@@ -162,19 +159,17 @@ function login() {
 
         if (!success) {
             console.log(`VU${__VU} Login failed - Status: ${response.status}, Response: ${response.body}`);
+            registerRate.add(false);
+            registerTime.add(endTime - startTime);
+            return false;
         } else {
             console.log(`VU${__VU} Login successful - User ID: ${response.json('id')}`);
         }
 
-        registerRate.add(success);
+        registerRate.add(true);
         registerTime.add(endTime - startTime);
-
-        if (success) {
-            authToken = response.json('accessToken');
-            return true;
-        }
-        
-        return false;
+        authToken = response.json('accessToken');
+        return true;
     }, 3, 'login');
 }
 
@@ -202,23 +197,26 @@ function createPost() {
         const endTime = Date.now();
 
         const success = check(response, {
-            'create post status is 200': (r) => r.status === 200,
+            'create post status is 200 or 201': (r) => r.status === 200 || r.status === 201,
             'create post has id': (r) => r.json('id') !== undefined,
             'create post has title': (r) => r.json('title') !== undefined
         });
 
-        articleCreationRate.add(success);
+        if (!success) {
+            console.log(`VU${__VU} Create post failed - Status: ${response.status}, Response: ${response.body}`);
+            articleCreationRate.add(false);
+            articleCreationTime.add(endTime - startTime);
+            return false;
+        }
+
+        articleCreationRate.add(true);
         articleCreationTime.add(endTime - startTime);
 
-        if (success) {
-            const postId = response.json('id');
-            articlesCreated.add(1);
-            availableArticles.push(postId);
-            console.log(`VU${__VU} created post: ${postId}, Total posts: ${availableArticles.length}`);
-            return postId;
-        }
-        
-        return false;
+        const postId = response.json('id');
+        articlesCreated.add(1);
+        availableArticles.push(postId);
+        console.log(`VU${__VU} created post: ${postId}, Total posts: ${availableArticles.length}`);
+        return postId;
     }, 3, 'createPost');
 }
 
@@ -245,20 +243,22 @@ function createComment(postId) {
         const endTime = Date.now();
 
         const success = check(response, {
-            'create comment status is 200': (r) => r.status === 200,
+            'create comment status is 200 or 201': (r) => r.status === 200 || r.status === 201,
             'create comment has body': (r) => r.json('body') !== undefined,
             'create comment has id': (r) => r.json('id') !== undefined
         });
 
-        commentCreationRate.add(success);
-        commentCreationTime.add(endTime - startTime);
-
-        if (success) {
-            commentsCreated.add(1);
-            return true;
+        if (!success) {
+            console.log(`VU${__VU} Create comment failed - Status: ${response.status}, Response: ${response.body}`);
+            commentCreationRate.add(false);
+            commentCreationTime.add(endTime - startTime);
+            return false;
         }
-        
-        return false;
+
+        commentCreationRate.add(true);
+        commentCreationTime.add(endTime - startTime);
+        commentsCreated.add(1);
+        return true;
     }, 3, 'createComment');
 }
 
@@ -288,22 +288,24 @@ function likePost(postId) {
             'like post has reactions': (r) => r.json('reactions') !== undefined
         });
 
-        favoriteRate.add(success);
-        favoriteTime.add(endTime - startTime);
-
-        if (success) {
-            favoritesGiven.add(1);
-            return true;
+        if (!success) {
+            console.log(`VU${__VU} Like post failed - Status: ${response.status}, Response: ${response.body}`);
+            favoriteRate.add(false);
+            favoriteTime.add(endTime - startTime);
+            return false;
         }
-        
-        return false;
+
+        favoriteRate.add(true);
+        favoriteTime.add(endTime - startTime);
+        favoritesGiven.add(1);
+        return true;
     }, 3, 'likePost');
 }
 
 // creator scenario
 export function creatorScenario() {
     if (!login()) {
-        console.log('Creator login failed');
+        console.log(`VU${__VU} Creator login failed`);
         return;
     }
 
@@ -315,7 +317,10 @@ export function creatorScenario() {
     for (let i = 0; i < postCount; i++) {
         const postId = createPost();
         if (postId) {
+            console.log(`VU${__VU} Successfully created post: ${postId}`);
             sleepJitter(2, 4); 
+        } else {
+            console.log(`VU${__VU} Failed to create post ${i + 1}/${postCount}`);
         }
     }
 
@@ -325,7 +330,7 @@ export function creatorScenario() {
 // consumer scenario
 export function consumerScenario() {
     if (!login()) {
-        console.log('Consumer login failed');
+        console.log(`VU${__VU} Consumer login failed`);
         return;
     }
 
@@ -336,7 +341,12 @@ export function consumerScenario() {
     const randomPostId = predefinedPostIds[Math.floor(Math.random() * predefinedPostIds.length)];
     
     console.log(`VU${__VU} Consumer commenting on post: ${randomPostId}`);
-    createComment(randomPostId);
+    const commentSuccess = createComment(randomPostId);
+    if (commentSuccess) {
+        console.log(`VU${__VU} Successfully commented on post: ${randomPostId}`);
+    } else {
+        console.log(`VU${__VU} Failed to comment on post: ${randomPostId}`);
+    }
     
     sleepJitter(2, 4);
 
@@ -344,7 +354,12 @@ export function consumerScenario() {
     if (Math.random() < 0.3) {
         const anotherPostId = predefinedPostIds[Math.floor(Math.random() * predefinedPostIds.length)];
         console.log(`VU${__VU} Consumer commenting on another post: ${anotherPostId}`);
-        createComment(anotherPostId);
+        const anotherCommentSuccess = createComment(anotherPostId);
+        if (anotherCommentSuccess) {
+            console.log(`VU${__VU} Successfully commented on another post: ${anotherPostId}`);
+        } else {
+            console.log(`VU${__VU} Failed to comment on another post: ${anotherPostId}`);
+        }
     }
 
     sleepJitter(1, 3);
@@ -353,7 +368,7 @@ export function consumerScenario() {
 // favoriter scenario
 export function favoriterScenario() {
     if (!login()) {
-        console.log('Favoriter login failed');
+        console.log(`VU${__VU} Favoriter login failed`);
         return;
     }
 
@@ -366,11 +381,23 @@ export function favoriterScenario() {
     for (let i = 0; i < likeCount; i++) {
         const randomPostId = predefinedPostIds[Math.floor(Math.random() * predefinedPostIds.length)];
         console.log(`VU${__VU} Favoriter liking post: ${randomPostId}`);
-        likePost(randomPostId);
+        const likeSuccess = likePost(randomPostId);
+        if (likeSuccess) {
+            console.log(`VU${__VU} Successfully liked post: ${randomPostId}`);
+        } else {
+            console.log(`VU${__VU} Failed to like post: ${randomPostId}`);
+        }
         sleepJitter(1, 2);
     }
 
     sleepJitter(2, 4);
+}
+
+// default function for CLI overrides
+export default function() {
+    // This function is used when CLI overrides scenarios
+    // It will run the creator scenario by default
+    creatorScenario();
 }
 
 // setup function

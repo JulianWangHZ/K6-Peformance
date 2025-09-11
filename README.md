@@ -40,7 +40,16 @@ Favoriters:                    [Like Phase] (1m-10.5 minutes)
 ### 2. Spike Testing
 - **File**: `test_scripts/conduit_spike_test.js`
 - **Purpose**: Test DummyJSON API behavior when load increases dramatically in a short time
-- **Configuration**: Simulates traffic spikes with rapid user increase
+- **Configuration**: Simulates traffic spikes with rapid user increase (20 → 200 → 300 VUs)
+- **Duration**: 10.5 minutes with multiple spike patterns
+- **Scenarios**: Mixed workload (30% creators, 40% consumers, 30% favoriters)
+
+#### Spike Test Timeline
+```
+Timeline: 0m → 2m → 3m → 5m → 5.5m → 7.5m → 8.5m → 9.5m → 10.5m
+VUs:     0  → 20  → 200 → 200 → 20   → 20   → 300  → 300  → 0
+Phase:   Start → Normal → Spike1 → Sustain → Drop → Recovery → Spike2 → Sustain → End
+```
 
 ### 3. Stress Testing
 - **File**: `test_scripts/conduit_stress_test.js`
